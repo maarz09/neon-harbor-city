@@ -1,5 +1,9 @@
 # Neon Harbor
 
+[![make.fun · gta6-01](https://make.fun/badge/gta6-01.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![rank](https://make.fun/badge/gta6-01/maarz09/neon-harbor-city/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![reward](https://make.fun/badge/gta6-01/maarz09/neon-harbor-city/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+
 An original open-world crime game for the browser, set in **Palmira Bay**, a fictional sun-soaked
 Gulf-coast city of pastel hotels, glass towers, palm-lined beach boulevards and a working harbor.
 Built with three.js (vendored as its minified ES module build) and plain JavaScript modules, no
@@ -61,3 +65,7 @@ play-through and reports console errors.
 `audio.js`, `radio.js`, `effects.js`, `cameraRig.js`, `player.js`, `game.js`, `main.js`, `shots.js`.
 
 License: MIT. three.js is MIT licensed (see `game/vendor/three-LICENSE.txt`).
+
+---
+
+Neon Harbor was entered in the [make.fun "Make GTA 6" bounty](https://make.fun/bounty/gta6-01).
