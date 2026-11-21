@@ -147,6 +147,43 @@ const SCENES = {
     game.hud.dialogue([['mari', 'Three of Brandt\'s boys guard that ledger. Make it quick.']]);
   },
 
+  /** The Harbor Lights finale: a gunfight with Brandt's guards between the cranes at Pier 9. */
+  docks(game) {
+    const w = PLACES.warehouse;
+    const px = w.x - 30; const pz = w.z - 1;
+    startPlay(game, px, pz, Math.PI / 2, 17.9);
+    clearTrafficNear(game, px + 20, pz, 50);
+    game.traffic.enabled = false;
+    game.progress.missionIndex = 4; game.progress.completed = ['homecoming', 'borrowedShine', 'paperTrail', 'nightShift'];
+    game.player.money = 14320; game.player.armour = 45; game.player.health = 64;
+    game.player.giveWeapon('pistol', 30);
+    jumpToMissionStep(game, 'harborLights', 3);
+    const goons = game.missions.goons;
+    const spots = [[w.x - 12, w.z + 3], [w.x - 4, w.z - 4], [w.x + 6, w.z + 6], [w.x - 18, w.z + 9]];
+    goons.forEach((gn, k) => gn.position.set(spots[k][0], 0.1, spots[k][1]));
+    goons[3].hit(200, game.player.position);
+    for (const gn of goons) gn.hostile = true;
+    game.input.aiming = true;
+    game.camera.yaw = Math.PI / 2;
+    simulate(game, 0.6);
+    goons.forEach((gn, k) => { if (k < 3) gn.position.set(spots[k][0], 0.1, spots[k][1]); });
+    const target = goons[0].position;
+    game.camera.yaw = Math.atan2(target.x - game.player.position.x, target.z - game.player.position.z) + 0.28;
+    game.player.aiming = false;
+    game.camera.pitch = 0.2;
+    game.camera.snap();
+    game.player.facing = game.camera.yaw - 0.28;
+    game.player.syncModel();
+    for (let k = 0; k < 10; k += 1) game.render(FIXED_STEP);
+    game.combat.playerShoot(WEAPONS.pistol);
+    game.player.facing = game.camera.yaw - 0.28;
+    game.player.syncModel();
+    game.combat.npcShoot(goons[1].position, game.player.position, 0, 7);
+    game.combat.npcShoot(goons[2].position, game.player.position, 0, 7);
+    game.player.weapons.pistol -= 1;
+    game.hud.dialogue([['mari', 'Brandt\'s whole payroll is in that warehouse. Get in, get the cash, get out.']]);
+  },
+
   /** The title screen over a golden-hour flyover. */
   title(game, menus) {
     game.state = 'title';

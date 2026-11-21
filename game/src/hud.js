@@ -18,6 +18,12 @@ export function highlight(text) {
   return String(text).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/~([^~]+)~/g, '<b>$1</b>');
 }
 
+/** Write innerHTML only when it changed, so the HUD does not rebuild its DOM every frame. */
+const lastHtml = new WeakMap();
+function setHtml(e, html) {
+  if (lastHtml.get(e) !== html) { lastHtml.set(e, html); e.innerHTML = html; }
+}
+
 export class Hud {
   constructor(root) {
     this.root = root;
@@ -117,10 +123,10 @@ export class Hud {
 
   update(dt, game) {
     const p = game.player;
-    this.money.textContent = `$${Math.floor(p.money).toLocaleString('en-US')}`;
-    this.clock.textContent = game.dayNight.clockText();
+    setHtml(this.money, `$${Math.floor(p.money).toLocaleString('en-US')}`);
+    setHtml(this.clock, game.dayNight.clockText());
     const w = WEAPONS[p.weapon];
-    this.weapon.innerHTML = p.weapon === 'fists' ? `<span class="wname">${w.name}</span>` : `<span class="wname">${w.name}</span> <span class="ammo">${p.weapons[p.weapon]}</span>`;
+    setHtml(this.weapon, p.weapon === 'fists' ? `<span class="wname">${w.name}</span>` : `<span class="wname">${w.name}</span> <span class="ammo">${p.weapons[p.weapon]}</span>`);
     const lvl = game.wanted.level;
     const flash = game.wanted.searching && Math.floor(performance.now() / 300) % 2 === 0;
     this.starEls.forEach((s, k) => { s.className = `hud-star${k < lvl ? (flash ? ' on dim' : ' on') : ''}`; });
@@ -130,23 +136,24 @@ export class Hud {
     this.armourBar.style.width = `${Math.max(0, p.armour)}%`;
 
     const m = game.missions;
-    this.objectiveTitle.textContent = m.active ? m.active.def.title.toUpperCase() : 'PALMIRA BAY';
+    let title = m.active ? m.active.def.title.toUpperCase() : 'PALMIRA BAY';
     const activity = game.activities.objectiveText();
-    if (activity && !m.active) this.objectiveTitle.textContent = game.activities.race ? 'SUNSET SPRINT' : 'BAY CAB';
-    this.objectiveText.innerHTML = highlight(activity && !m.active ? activity : m.objectiveText());
+    if (activity && !m.active) title = game.activities.race ? 'SUNSET SPRINT' : 'BAY CAB';
+    setHtml(this.objectiveTitle, title);
+    setHtml(this.objectiveText, highlight(activity && !m.active ? activity : m.objectiveText()));
     let extra = m.counter || '';
     if (m.active && m.timer > 0) extra = `<span class="timer">${Math.floor(m.timer / 60)}:${String(Math.floor(m.timer % 60)).padStart(2, '0')}</span> ${extra}`;
     if (game.wanted.level > 0 && game.wanted.searching) extra += ' <span class="search">Cops searching…</span>';
-    this.objectiveExtra.innerHTML = extra;
+    setHtml(this.objectiveExtra, extra);
 
     const pos = p.worldPosition;
     const area = areaNameAt(pos.x, pos.z);
-    this.area.textContent = area;
+    setHtml(this.area, area);
     if (area !== this.lastArea) { this.area.classList.remove('pulse'); void this.area.offsetWidth; this.area.classList.add('pulse'); this.lastArea = area; }
 
     if (p.inVehicle) {
-      this.vehicleName.textContent = p.vehicle.name;
-      this.speed.innerHTML = `${Math.round(p.vehicle.speedKmh)}<small>km/h</small>`;
+      setHtml(this.vehicleName, p.vehicle.name);
+      setHtml(this.speed, `${Math.round(p.vehicle.speedKmh)}<small>km/h</small>`);
       this.vehicleHealth.style.width = `${p.vehicle.health}%`;
       this.speed.parentElement.classList.add('show');
     } else this.speed.parentElement.classList.remove('show');
