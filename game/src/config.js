@@ -1,61 +1,64 @@
-// Every tuning number and colour in one place. The playfield is a fixed 1280x720 logical area;
-// the renderer scales it to the window, so no rule below depends on the screen size.
+// Shared tuning numbers for Neon Harbor: the size of the city grid, how cars and people move,
+// how the law reacts. Every other module reads its constants from here so balancing is one file.
 
-export const FIELD = { width: 1280, height: 720, groundY: 664 };
-
-/** The simulation's fixed step, in seconds: 60 updates a second whatever the display's rate. */
-export const STEP = 1 / 60;
-
-export const PLAYER = {
-  width: 72,
-  height: 24,
-  speed: 560,
-  invulnerable: 1.5,
+export const CITY = {
+  blocksX: 9,          // blocks west to east (the last column is beach and ocean)
+  blocksZ: 8,          // blocks north to south
+  block: 64,           // metres from one road centre line to the next
+  road: 14,            // width of a road surface
+  sidewalk: 3,         // width of the pavement ring around each block
+  coastBlocks: 1,      // columns at the east edge given over to sand and sea
 };
 
-export const LIVES = 3;
+export const WORLD_W = CITY.blocksX * CITY.block;
+export const WORLD_D = CITY.blocksZ * CITY.block;
 
-export const BLOCK = {
-  minWidth: 40,
-  maxWidth: 110,
-  height: 36,
-  speed: 240,
-  speedPerLevel: 30,
-  speedJitter: 90,
-  interval: 0.55,
-  intervalScale: 0.88,
-  minInterval: 0.14,
-  dodgePoints: 1,
+export const PLAYER_TUNING = {
+  walk: 4.2,
+  sprint: 8.5,
+  jump: 6.5,
+  gravity: 22,
+  radius: 0.45,
+  maxHealth: 100,
+  maxArmour: 100,
+  punchRange: 1.8,
+  punchDamage: 22,
+  enterRange: 4.2,
 };
 
-export const COIN = {
-  size: 24,
-  speed: 190,
-  speedPerLevel: 14,
-  interval: 1.4,
-  intervalJitter: 0.8,
-  points: 10,
+export const CAR_TUNING = {
+  accel: 16,
+  brake: 30,
+  reverse: 8,
+  drag: 0.35,
+  roll: 1.6,
+  steer: 2.3,
+  grip: 6.5,
+  handbrakeGrip: 1.4,
 };
 
-/** Seconds of play per level, and the last level: speeds and spawn rates stop growing there. */
-export const LEVEL = { seconds: 12, max: 12 };
-
-/** How many falling things can exist at once; the pool is allocated once, at boot. */
-export const POOL_SIZE = 64;
-
-export const PALETTE = {
-  backdrop: '#11141b',
-  sky: '#1b1f2a',
-  ground: '#2a3040',
-  player: '#4fc3f7',
-  block: '#e5534b',
-  coin: '#f2c94c',
-  panel: '#252b38',
-  text: '#eef1f5',
-  muted: '#8b93a3',
+export const TRAFFIC_TUNING = {
+  cars: 34,
+  pedestrians: 46,
+  cruise: 11,
+  pedWalk: 1.4,
+  despawnRadius: 260,
 };
 
-export const FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';
+export const POLICE_TUNING = {
+  unitsPerStar: [0, 1, 2, 3, 4, 5],
+  speedByStar: [0, 17, 20, 23, 26, 29],
+  sightRadius: 85,
+  loseSeconds: 9,
+  bustSeconds: 2.6,
+  spawnDistance: 120,
+};
 
-/** Where the best score is kept between visits (this browser only). */
-export const BEST_KEY = 'block-dodger.best';
+export const WEAPONS = {
+  fists: { name: 'Fists', damage: 22, cooldown: 0.42, range: 1.8, ammo: Infinity },
+  pistol: { name: 'Hawk 9 Pistol', damage: 34, cooldown: 0.28, range: 70, ammo: 60, spread: 0.02 },
+  smg: { name: 'Vespa SMG', damage: 18, cooldown: 0.08, range: 55, ammo: 0, spread: 0.06 },
+};
+
+export const FIXED_STEP = 1 / 60;
+export const SAVE_KEY = 'neon-harbor-save-v1';
