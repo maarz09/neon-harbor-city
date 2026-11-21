@@ -1,16 +1,12 @@
-// A working gta6-01 entry (Node 22, standard library only): the game is this directory's
-// game/ folder, plain static files a desktop browser loads offline (game/index.html and its ES
-// modules, no library and no network request), and the program hands it in. It copies game/ and
-// screenshots/ from beside this file to /output and writes /output/dossier.json, the summary the
-// judge reads, with the vendored make.fun library. Only the plumbing, not an open world: Block
-// Dodger, a plain 2D canvas game where a paddle dodges falling blocks and catches coins, with a
-// title screen, score, lives and levels, game over and restart, flat colours and no sound. Build
-// your own open-world crime game in its place (three.js or any library you vendor under game/),
-// put your 3 or 4 PNG or JPEG screenshots in screenshots/ (the first by name is the cover) and run it.
+// Neon Harbor's hand-in program (Node 22, standard library only). The game itself lives in
+// game/: static files that desktop Chrome opens with no build step and no network request
+// (index.html, an import map pointing "three" at the vendored minified three.js build, and the
+// game's own ES modules under game/src/). This program copies game/ and the four screenshots in
+// screenshots/ (the first by name is the cover) into the output directory, then writes the
+// dossier.json summary the judge reads, using the kit's unchanged vendor/makefun-game.ts.
 //
-// Serve it locally with `node serve.ts`, then open http://localhost:8080.
-// Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
-//   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+// Play locally: `node serve.ts`, then open http://localhost:8080.
+// Build locally: `mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts` (the grader uses /output).
 
 import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -18,17 +14,16 @@ import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
-const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output'; // the grader's directory unless overridden
 
 mkdirSync(out, { recursive: true });
 cpSync(join(here, 'game'), join(out, 'game'), { recursive: true });
 mkdirSync(join(out, 'screenshots'), { recursive: true });
 if (existsSync(join(here, 'screenshots'))) cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
 
-// The scorer's own caps (reference/gate.json): only text_max_bytes shapes the bytes; the others refuse an entry the
-// scorer would refuse (more than 4 screenshots or one over 256 KiB; more than 993 files in game/ or 48 MiB of game
-// files, in all, or a path under game/ over 1000 bytes: game/ counts beside /output's own 1000-entry cap, its
-// screenshots/ and dossier.json).
+// The limits below mirror the scorer's: the dossier's source text is cut at 160 KiB, and the build fails early
+// (rather than at the gate) on more than 4 screenshots or one over 256 KiB, on more than 993 entries or 48 MiB
+// under game/, or on a game path longer than 1000 bytes.
 writeFileSync(
   join(out, 'dossier.json'),
   buildDossier(out, {
