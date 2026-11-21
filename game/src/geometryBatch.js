@@ -45,8 +45,11 @@ export class GeometryBatch {
       for (const [a, b] of corners) {
         const lx = face.n[0] * half[0] + face.u[0] * a * half[0] + face.v[0] * b * half[0];
         const ly = face.n[1] * half[1] + face.u[1] * a * half[1] + face.v[1] * b * half[1];
-        const lz = face.n[2] * half[2] + face.u[2] * a * half[2] + face.v[2] * b * half[2];
-        this.pos.push(x + lx * cos + lz * sin, y + ly, z - lx * sin + lz * cos);
+        let lz = face.n[2] * half[2] + face.u[2] * a * half[2] + face.v[2] * b * half[2];
+        let lxT = lx;
+        // taper: shrink the top of the box (sloped windscreens on car cabins)
+        if (opts.taper && ly > 0) { lz = lz * (1 - opts.taper) + (opts.taperShift || 0); lxT = lx * (1 - (opts.taperX || 0)); }
+        this.pos.push(x + lxT * cos + lz * sin, y + ly, z - lxT * sin + lz * cos);
         const nx = face.n[0]; const nz = face.n[2];
         this.nor.push(nx * cos + nz * sin, face.n[1], -nx * sin + nz * cos);
         if (f === 2 || f === 3) {

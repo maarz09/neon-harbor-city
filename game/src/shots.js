@@ -81,7 +81,8 @@ const SCENES = {
     game.camera.pitch = 0.3;
     game.camera.freeLookTimer = 100;
     game.camera.snap();
-    game.hud.toasts.innerHTML = '';
+    for (const t of game.hud.toastList) t.el.remove();
+    game.hud.toastList = [];
     game.hud.toast('Wanted: ~Car alarm tripped~', 'bad');
   },
 

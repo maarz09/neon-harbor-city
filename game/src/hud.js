@@ -55,6 +55,7 @@ export class Hud {
     this.card = el('div', 'hud-card', root);
     this.hint = el('div', 'hud-hint', root);
 
+    this.toastList = [];   // { el, age }: toasts fade by game time, not wall-clock time
     this.queue = [];
     this.lineTimer = 0;
     this.talking = false;
@@ -67,9 +68,8 @@ export class Hud {
 
   toast(text, kind = '') {
     const t = el('div', `hud-toast ${kind}`, this.toasts, highlight(text));
-    setTimeout(() => t.classList.add('out'), 2600);
-    setTimeout(() => t.remove(), 3200);
-    while (this.toasts.children.length > 4) this.toasts.firstChild.remove();
+    this.toastList.push({ el: t, age: 0 });
+    while (this.toastList.length > 4) this.toastList.shift().el.remove();
   }
 
   banner(title, sub = '', kind = '') {
@@ -153,7 +153,12 @@ export class Hud {
     this.crosshair.classList.toggle('show', !p.inVehicle && p.weapon !== 'fists');
     this.crosshair.classList.toggle('aim', p.aiming);
 
-    if (this.talking || this.lineTimer > 0) { this.lineTimer -= dt; if (this.lineTimer <= 0) this.nextLine(); }
+    for (const t of [...this.toastList]) {
+      t.age += dt;
+      if (t.age > 2.6) t.el.classList.add('out');
+      if (t.age > 3.2) { t.el.remove(); this.toastList.splice(this.toastList.indexOf(t), 1); }
+    }
+        if (this.talking || this.lineTimer > 0) { this.lineTimer -= dt; if (this.lineTimer <= 0) this.nextLine(); }
     if (this.bannerTimer > 0) { this.bannerTimer -= dt; if (this.bannerTimer <= 0) this.bannerEl.classList.remove('show'); }
     if (this.cardTimer > 0) { this.cardTimer -= dt; if (this.cardTimer <= 0) this.card.classList.remove('show'); }
     if (this.radioTimer > 0) { this.radioTimer -= dt; if (this.radioTimer <= 0) this.radio.classList.remove('show'); }

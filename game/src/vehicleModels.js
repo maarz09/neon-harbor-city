@@ -15,7 +15,7 @@ export const VEHICLE_TYPES = {
   police: { name: 'Bay PD Interceptor', len: 4.8, wid: 2.0, hgt: 0.75, cabin: [2.4, 0.65, 1.75], cabinZ: -0.2, wheelR: 0.38, maxSpeed: 50, accel: 1.3, mass: 1.3, colors: ['#10141c'] },
 };
 
-const GLASS = new THREE.Color('#1b2633');
+const GLASS = new THREE.Color('#22364a');
 const TRIM = new THREE.Color('#1a1a1a');
 const CHROME = new THREE.Color('#c9ced6');
 const wheelGeo = new THREE.CylinderGeometry(1, 1, 1, 14).rotateZ(Math.PI / 2);
@@ -40,10 +40,13 @@ function bodyGeometry(type, color) {
   g.addBox(0, base + H * 0.35, -L / 2 - 0.03, W * 0.94, 0.18, 0.1, TRIM);      // rear bumper
   const [cl, ch, cw] = t.cabin;
   const cy = base + H + ch / 2;
-  g.addBox(0, cy, t.cabinZ, cw, ch, cl, GLASS);
-  g.addBox(0, cy + ch / 2 + 0.04, t.cabinZ, cw * 0.96, 0.08, cl * 0.8, paint);  // roof
-  g.addBox(cw / 2 - 0.02, cy, t.cabinZ, 0.06, ch, 0.12, paint);                // B pillars
-  g.addBox(-cw / 2 + 0.02, cy, t.cabinZ, 0.06, ch, 0.12, paint);
+  // the glasshouse narrows toward the roof so the windscreen and rear window slope
+  const taper = type === 'van' ? 0.08 : type === 'suv' ? 0.18 : 0.36;
+  const shift = type === 'van' ? 0 : -cl * 0.06;
+  g.addBox(0, cy, t.cabinZ, cw, ch, cl, GLASS, { taper, taperShift: shift, taperX: 0.1 });
+  g.addBox(0, cy + ch / 2 + 0.03, t.cabinZ + shift, cw * 0.9, 0.07, cl * (1 - taper) * 0.98, paint);  // roof
+  g.addBox(cw / 2 - 0.05, cy, t.cabinZ, 0.06, ch, 0.12, paint);                // B pillars
+  g.addBox(-cw / 2 + 0.05, cy, t.cabinZ, 0.06, ch, 0.12, paint);
   g.addBox(W / 2 + 0.06, base + H * 0.9, t.cabinZ + cl / 2 - 0.2, 0.12, 0.1, 0.22, TRIM); // mirrors
   g.addBox(-W / 2 - 0.06, base + H * 0.9, t.cabinZ + cl / 2 - 0.2, 0.12, 0.1, 0.22, TRIM);
   g.addBox(W / 2 + 0.01, base + H * 0.55, 0, 0.02, 0.05, L * 0.7, CHROME);    // side strips
