@@ -77,11 +77,10 @@ const SCENES = {
     game.traffic.spawnCar(laneX, 200, 30, 90);
     game.autopilot = laneAutopilot('x', laneX, -1, 31);
     simulate(game, 1.6);
-    game.camera.yaw = car.heading + Math.PI * 0.78;
+    game.camera.yaw = Number(new URLSearchParams(location.search).get('yaw') || 0.55) // looking south-east: front-lit by the sunset, sea behind;
     game.camera.pitch = 0.3;
     game.camera.freeLookTimer = 100;
     game.camera.snap();
-    game.hud.toast('Wanted: ~Car alarm tripped~', 'bad');
   },
 
   /** An afternoon delivery run toward the beach hotels and the open sea. */

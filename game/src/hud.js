@@ -44,6 +44,7 @@ export class Hud {
 
     const br = el('div', 'hud-bottomright', root);
     this.vehicleName = el('div', 'hud-vehicle', br);
+    this.vehicleHealth = el('div', 'hud-bar-fill vehicle', el('div', 'hud-bar hud-vehicle-bar', br));
     this.speed = el('div', 'hud-speed', br);
     this.radio = el('div', 'hud-radio', root);
 
@@ -130,7 +131,9 @@ export class Hud {
 
     const m = game.missions;
     this.objectiveTitle.textContent = m.active ? m.active.def.title.toUpperCase() : 'PALMIRA BAY';
-    this.objectiveText.innerHTML = highlight(m.objectiveText());
+    const activity = game.activities.objectiveText();
+    if (activity && !m.active) this.objectiveTitle.textContent = game.activities.race ? 'SUNSET SPRINT' : 'BAY CAB';
+    this.objectiveText.innerHTML = highlight(activity && !m.active ? activity : m.objectiveText());
     let extra = m.counter || '';
     if (m.active && m.timer > 0) extra = `<span class="timer">${Math.floor(m.timer / 60)}:${String(Math.floor(m.timer % 60)).padStart(2, '0')}</span> ${extra}`;
     if (game.wanted.level > 0 && game.wanted.searching) extra += ' <span class="search">Cops searching…</span>';
@@ -144,6 +147,7 @@ export class Hud {
     if (p.inVehicle) {
       this.vehicleName.textContent = p.vehicle.name;
       this.speed.innerHTML = `${Math.round(p.vehicle.speedKmh)}<small>km/h</small>`;
+      this.vehicleHealth.style.width = `${p.vehicle.health}%`;
       this.speed.parentElement.classList.add('show');
     } else this.speed.parentElement.classList.remove('show');
     this.crosshair.classList.toggle('show', !p.inVehicle && p.weapon !== 'fists');

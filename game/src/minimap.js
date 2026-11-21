@@ -55,9 +55,8 @@ export class Minimap {
     const flash = Math.floor(this.time * 6) % 2;
     for (const u of game.police.units) if (!u.vehicle.destroyed) blips.push({ x: u.vehicle.position.x, z: u.vehicle.position.z, color: u.vehicle.sirenOn ? (flash ? '#ff2a45' : '#2a6bff') : '#6a8cff', size: 4.5 });
     for (const m of game.markers.markers) {
-      blips.push({ x: m.x, z: m.z, color: MARKER_COLORS[m.kind], size: m.kind === 'target' ? 4 : 6, label: m.label, ring: m.kind !== 'target', edge: true });
+      blips.push({ x: m.x, z: m.z, color: MARKER_COLORS[m.kind], size: m.kind === 'target' ? 4 : 6, label: m.label, edge: m.kind !== 'save' && m.label !== 'R' });
     }
-    blips.push({ x: PLACES.safehouse.x, z: PLACES.safehouse.z, color: '#3ddc84', label: 'H', size: 6, edge: false });
     return blips;
   }
 

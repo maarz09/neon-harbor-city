@@ -84,7 +84,7 @@ export function paintAsphaltTexture() {
     g.fillRect(rand.range(0, 256), rand.range(0, 256), 1.5, 1.5);
   }
   for (let i = 0; i < 6; i += 1) {
-    g.strokeStyle = 'rgba(20,20,20,0.35)'; g.lineWidth = 1;
+    g.strokeStyle = 'rgba(25,25,25,0.16)'; g.lineWidth = 1;
     g.beginPath(); g.moveTo(rand.range(0, 256), rand.range(0, 256));
     for (let k = 0; k < 5; k += 1) g.lineTo(rand.range(0, 256), rand.range(0, 256));
     g.stroke();

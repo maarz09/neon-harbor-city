@@ -23,6 +23,7 @@ import { EffectsSystem } from './effects.js';
 import { PickupSystem } from './pickups.js';
 import { MarkerSystem } from './markers.js';
 import { MissionDirector } from './missions.js';
+import { ActivitySystem } from './activities.js';
 import { Hud } from './hud.js';
 import { Minimap } from './minimap.js';
 import { AudioEngine } from './audio.js';
@@ -65,8 +66,9 @@ export class Game {
     this.combat = new CombatSystem(this);
     this.pickups = new PickupSystem(this);
     this.missions = new MissionDirector(this);
+    this.activities = new ActivitySystem(this);
     this.progress = { missionIndex: 0, completed: [], conches: [] };
-    this.stats = { carsStolen: 0, takedowns: 0, missions: 0 };
+    this.stats = { carsStolen: 0, takedowns: 0, missions: 0, racesWon: 0, fares: 0 };
     this.state = 'title';
     this.autopilot = null; // screenshot scenes steer the player's car with this
     this.time = 0;
@@ -74,7 +76,7 @@ export class Game {
     this.defeatTimer = 0;
     this.saveCooldown = 0;
     this.wanted.onChange = (level, before) => {
-      if (level > before) { this.hud.toast(`Wanted: ${this.wanted.lastCrime}`, 'bad'); }
+      if (level > before) { this.hud.toast(this.wanted.lastCrime ? `Wanted: ~${this.wanted.lastCrime}~` : 'Wanted level raised', 'bad'); }
       else if (level === 0 && before > 0) { this.hud.toast('You lost the cops.', 'good'); }
     };
     // one real headlight beam rides on the player's car after dusk
@@ -127,6 +129,7 @@ export class Game {
 
   /** Clear everything and set up a fresh city around a starting point. */
   resetWorld() {
+    this.activities.race = null; this.activities.fare = null;
     this.police.clearAll();
     for (const v of [...this.fleet.list]) this.fleet.remove(v);
     this.traffic.drivers = [];
@@ -145,7 +148,7 @@ export class Game {
 
   newGame() {
     this.progress = { missionIndex: 0, completed: [], conches: [] };
-    this.stats = { carsStolen: 0, takedowns: 0, missions: 0 };
+    this.stats = { carsStolen: 0, takedowns: 0, missions: 0, racesWon: 0, fares: 0 };
     this.resetWorld();
     const p = this.player;
     p.health = 100; p.armour = 0; p.money = 500; p.weapons = { fists: Infinity, pistol: 0, smg: 0 }; p.weapon = 'fists';
@@ -163,6 +166,7 @@ export class Game {
     this.missions.setupContacts();
     this.pickups.placeWorldPickups(this.progress.conches);
     if (this.progress.conches.length >= 12) this.pickups.add('smg', PLACES.safehouse.x, PLACES.safehouse.z, 120, { respawn: 120 });
+    this.activities.placeMarkers();
     this.saveMarker = this.markers.add('save', PLACES.safehouse.x + 2, PLACES.safehouse.z, { radius: 1.2, label: 'H' });
     this.camera.yaw = this.player.facing;
     this.camera.snap();
@@ -192,6 +196,7 @@ export class Game {
     this.defeatTimer = 4;
     this.audio.wasted();
     this.missions.onPlayerLost();
+    this.activities.cancel();
     if (this.onDefeat) this.onDefeat('dead', 'Coral General patched you up. The bill: $250.');
   }
 
@@ -202,6 +207,7 @@ export class Game {
     this.defeatTimer = 4;
     this.audio.missionFailed();
     this.missions.onPlayerLost();
+    this.activities.cancel();
     if (this.onDefeat) this.onDefeat('busted', 'A night in the Bay Precinct and a $300 fine.');
   }
 
@@ -289,6 +295,7 @@ export class Game {
     this.police.update(dt);
     this.combat.updateRunOvers();
     this.missions.update(dt);
+    this.activities.update(dt);
     this.pickups.update(dt);
     this.markers.update(dt);
     this.updateVehicleEffects(dt);
@@ -318,7 +325,8 @@ export class Game {
 
   onCarCrash(e) {
     if (e.speed < 3) return;
-    for (const v of [e.a, e.b]) v.takeDamage(e.speed * (v.driver === 'player' ? 0.7 : 1.2));
+    const toughness = { player: 0.7, racer: 0.3, police: 0.8 };
+    for (const v of [e.a, e.b]) v.takeDamage(e.speed * (toughness[v.driver] || 1.2));
     const involvesPlayer = e.a.driver === 'player' || e.b.driver === 'player';
     if (involvesPlayer) {
       this.camera.addShake(Math.min(1, e.speed / 18));

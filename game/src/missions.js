@@ -293,7 +293,7 @@ export class MissionDirector {
     }
     if (!this.active) {
       const next = this.nextMission;
-      if (!next || this.cooldown > 0 || g.wanted.level > 0) return;
+      if (!next || this.cooldown > 0 || g.wanted.level > 0 || g.activities.busy) return;
       const place = PLACES[next.place];
       const pos = g.player.worldPosition;
       if (!g.player.inVehicle && Math.hypot(pos.x - place.x, pos.z - place.z) < 2.5) this.start(next);

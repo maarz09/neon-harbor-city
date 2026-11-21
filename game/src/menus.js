@@ -5,7 +5,7 @@ import { hasSave, readSave, describeSave } from './save.js';
 
 const CONTROLS = [
   ['W A S D', 'Walk / drive'], ['Mouse', 'Look around'], ['Shift', 'Sprint'], ['Space', 'Jump / handbrake'],
-  ['E or F', 'Enter, steal or exit a car'], ['Left click', 'Punch / shoot'], ['Right click', 'Aim'],
+  ['E or F', 'Enter, steal or exit a car'], ['T', 'Look for fares in a Bay Cab'], ['Left click', 'Punch / shoot'], ['Right click', 'Aim'],
   ['Q / wheel / 1-3', 'Switch weapon'], ['R', 'Change radio station'], ['H', 'Horn'], ['Enter', 'Skip dialogue'],
   ['M or Esc', 'Pause menu and map'],
 ];
@@ -99,6 +99,7 @@ export class MenuSystem {
             <div>Golden Conches <b>${game.progress.conches.length}/12</b></div>
             <div>Cars stolen <b>${game.stats.carsStolen}</b></div>
             <div>Takedowns <b>${game.stats.takedowns}</b></div>
+            <div>Races won <b>${game.stats.racesWon || 0}</b> · Fares <b>${game.stats.fares || 0}</b></div>
           </div>
         </div>
         <div class="pause-map"><canvas width="760" height="640"></canvas><div class="legend"><span class="m">M/D</span> contacts <span class="y">●</span> objective <span class="g">H</span> safehouse <span class="r">●</span> police</div></div>

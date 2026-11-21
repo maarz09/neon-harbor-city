@@ -40,6 +40,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0d0a18; fon
 .hud-bottomright { position: absolute; right: 26px; bottom: 24px; text-align: right; opacity: 0; transition: opacity 0.3s; text-shadow: 0 2px 3px #000; }
 .hud-bottomright.show { opacity: 1; }
 .hud-vehicle { font-size: 16px; color: var(--teal); letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+.hud-vehicle-bar { width: 140px; height: 6px; margin: 4px 0 2px auto; }
+.hud-bar-fill.vehicle { background: linear-gradient(90deg, #ffb02e, #ffe08a); }
 .hud-speed { font-size: 52px; font-weight: 800; line-height: 1; font-style: italic; }
 .hud-speed small { font-size: 16px; margin-left: 4px; font-style: normal; opacity: 0.8; }
 .hud-radio { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); background: var(--panel); padding: 7px 16px; border-radius: 20px; font-size: 16px; opacity: 0; transition: opacity 0.4s; border: 1px solid rgba(46,230,214,0.6); }
