@@ -12,7 +12,7 @@ export const VEHICLE_TYPES = {
   taxi: { name: 'Bay Cab', len: 4.7, wid: 1.95, hgt: 0.75, cabin: [2.5, 0.65, 1.7], cabinZ: -0.15, wheelR: 0.36, maxSpeed: 37, accel: 0.9, mass: 1.1, colors: ['#ffc300'] },
   van: { name: 'Pelican Van', len: 5.4, wid: 2.1, hgt: 1.7, cabin: [1.2, 0.5, 2.0], cabinZ: 1.4, wheelR: 0.42, maxSpeed: 30, accel: 0.7, mass: 1.8, colors: ['#ffffff', '#f6bd60', '#84a59d', '#90e0ef'] },
   muscle: { name: 'Corsair GT', len: 4.6, wid: 2.0, hgt: 0.66, cabin: [1.9, 0.52, 1.6], cabinZ: -0.5, wheelR: 0.4, maxSpeed: 52, accel: 1.3, mass: 1.15, colors: ['#d4a017', '#7b2cbf', '#06d6a0', '#ef476f'] },
-  police: { name: 'Bay PD Interceptor', len: 4.8, wid: 2.0, hgt: 0.75, cabin: [2.4, 0.65, 1.75], cabinZ: -0.2, wheelR: 0.38, maxSpeed: 48, accel: 1.15, mass: 1.3, colors: ['#10141c'] },
+  police: { name: 'Bay PD Interceptor', len: 4.8, wid: 2.0, hgt: 0.75, cabin: [2.4, 0.65, 1.75], cabinZ: -0.2, wheelR: 0.38, maxSpeed: 50, accel: 1.3, mass: 1.3, colors: ['#10141c'] },
 };
 
 const GLASS = new THREE.Color('#1b2633');

@@ -47,8 +47,8 @@ export const TRAFFIC_TUNING = {
 
 export const POLICE_TUNING = {
   unitsPerStar: [0, 1, 2, 3, 4, 5],
-  speedByStar: [0, 17, 20, 23, 26, 29],
-  sightRadius: 85,
+  speedByStar: [0, 24, 30, 35, 39, 43],
+  sightRadius: 110,
   loseSeconds: 9,
   bustSeconds: 2.6,
   spawnDistance: 120,
