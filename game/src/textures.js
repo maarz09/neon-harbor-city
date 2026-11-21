@@ -77,9 +77,9 @@ export function paintFacadeTextures() {
 export function paintAsphaltTexture() {
   const [c, g] = canvas(256, 256);
   const rand = createRng(5);
-  g.fillStyle = '#3a3d42'; g.fillRect(0, 0, 256, 256);
+  g.fillStyle = '#4c4f55'; g.fillRect(0, 0, 256, 256);
   for (let i = 0; i < 9000; i += 1) {
-    const v = rand.int(40, 90);
+    const v = rand.int(55, 110);
     g.fillStyle = `rgba(${v},${v},${v + 4},0.35)`;
     g.fillRect(rand.range(0, 256), rand.range(0, 256), 1.5, 1.5);
   }
@@ -106,12 +106,20 @@ export function paintGroundTexture(base, speck, seed) {
 }
 
 export function paintPavingTexture() {
-  const [c, g] = canvas(128, 128);
-  g.fillStyle = '#c9c1b4'; g.fillRect(0, 0, 128, 128);
-  g.strokeStyle = 'rgba(90,80,70,0.35)'; g.lineWidth = 2;
-  for (let i = 0; i <= 128; i += 32) {
-    g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 128); g.stroke();
-    g.beginPath(); g.moveTo(0, i); g.lineTo(128, i); g.stroke();
+  const [c, g] = canvas(256, 256);
+  const rand = createRng(19);
+  g.fillStyle = '#d6cfc3'; g.fillRect(0, 0, 256, 256);
+  // slightly varied slabs, then faint joints between them
+  for (let x = 0; x < 256; x += 64) {
+    for (let y = 0; y < 256; y += 64) {
+      const v = rand.int(-10, 10);
+      g.fillStyle = `rgb(${214 + v},${207 + v},${195 + v})`; g.fillRect(x, y, 64, 64);
+    }
+  }
+  g.strokeStyle = 'rgba(110,100,90,0.22)'; g.lineWidth = 2;
+  for (let i = 0; i <= 256; i += 64) {
+    g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 256); g.stroke();
+    g.beginPath(); g.moveTo(0, i); g.lineTo(256, i); g.stroke();
   }
   return toTexture(c);
 }

@@ -107,7 +107,7 @@ export function buildBlocks(scene) {
   }
   // the harbor quay along the south edge
   slabs.addBox((BEACH_X - 40) / 2, 0.05, (HARBOR_Z + HARBOR_WATER_Z) / 2, BEACH_X + 40, 0.1, HARBOR_WATER_Z - HARBOR_Z, new THREE.Color('#9a958c'), { skipBottom: true });
-  tops.addFlatQuad((BEACH_X - 40) / 2, 0.104, (HARBOR_Z + HARBOR_WATER_Z) / 2, BEACH_X + 40, HARBOR_WATER_Z - HARBOR_Z, new THREE.Color('#a8a296'));
+  tops.addFlatQuad((BEACH_X - 40) / 2, 0.104, (HARBOR_Z + HARBOR_WATER_Z) / 2, BEACH_X + 40, HARBOR_WATER_Z - HARBOR_Z, new THREE.Color('#c4bcae'));
   const slabMesh = new THREE.Mesh(slabs.build(), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 }));
   const paving = paintPavingTexture();
   const topMesh = new THREE.Mesh(tops.build(), new THREE.MeshStandardMaterial({ map: paving, vertexColors: true, roughness: 0.95 }));

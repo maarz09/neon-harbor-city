@@ -79,7 +79,7 @@ export function buildLamps(scene, plan) {
     const hx = l.x + ax * 2.0; const hz = l.z + az * 2.0;
     heads.addGeometry(head, trs(hx, 6.9, hz, 0, ax ? Math.PI / 2 : 0, 0), '#fff2c4');
     glowPositions.push(hx, 6.75, hz);
-    pools.addFlatQuad(hx, 0.03, hz, 9, 9, new THREE.Color('#ffb966'), 0, true);
+    pools.addFlatQuad(hx, 0.03, hz, 13, 13, new THREE.Color('#ffb966'), 0, true);
   }
   const poleMesh = new THREE.Mesh(poles.build(), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, metalness: 0.4 }));
   poleMesh.castShadow = true;

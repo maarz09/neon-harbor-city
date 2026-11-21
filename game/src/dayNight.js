@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 
 const KEYS = [
-  { h: 0, top: '#060a1c', hor: '#1b2346', sun: '#8aa0ff', sunI: 0.12, hemiS: '#2a3a6a', hemiG: '#141020', hemiI: 0.35, fog: '#131a33', night: 1 },
+  { h: 0, top: '#060a1c', hor: '#1b2346', sun: '#8aa0ff', sunI: 0.2, hemiS: '#34467e', hemiG: '#161226', hemiI: 0.5, fog: '#131a33', night: 1 },
   { h: 5.2, top: '#101a3a', hor: '#3a3358', sun: '#8aa0ff', sunI: 0.15, hemiS: '#3a4a7a', hemiG: '#1a1420', hemiI: 0.4, fog: '#262a48', night: 1 },
   { h: 6.4, top: '#3a5fa8', hor: '#ff9e7a', sun: '#ffb07a', sunI: 1.2, hemiS: '#9fb5e0', hemiG: '#5a4a40', hemiI: 0.7, fog: '#d9a79a', night: 0.3 },
   { h: 9, top: '#2f78d6', hor: '#bfe1ff', sun: '#fff1d6', sunI: 2.6, hemiS: '#bcdcff', hemiG: '#7a6a50', hemiI: 1.0, fog: '#c4dcef', night: 0 },
@@ -12,8 +12,8 @@ const KEYS = [
   { h: 17.2, top: '#3b68b8', hor: '#ffc98a', sun: '#ffcf8a', sunI: 2.5, hemiS: '#c5c8ea', hemiG: '#7a5a40', hemiI: 0.95, fog: '#f2c9a0', night: 0 },
   { h: 18.6, top: '#3a3f8f', hor: '#ff7a4a', sun: '#ff8a4a', sunI: 1.9, hemiS: '#b49ad0', hemiG: '#6a4038', hemiI: 0.8, fog: '#f08a68', night: 0.35 },
   { h: 19.6, top: '#1e2160', hor: '#c8508a', sun: '#ff6a6a', sunI: 0.6, hemiS: '#6a5aa0', hemiG: '#2a1a30', hemiI: 0.55, fog: '#6a3a6a', night: 0.8 },
-  { h: 21, top: '#080c22', hor: '#24264f', sun: '#8aa0ff', sunI: 0.15, hemiS: '#2a3a6a', hemiG: '#141020', hemiI: 0.38, fog: '#161c38', night: 1 },
-  { h: 24, top: '#060a1c', hor: '#1b2346', sun: '#8aa0ff', sunI: 0.12, hemiS: '#2a3a6a', hemiG: '#141020', hemiI: 0.35, fog: '#131a33', night: 1 },
+  { h: 21, top: '#0a0f2c', hor: '#2c2a5c', sun: '#8aa0ff', sunI: 0.22, hemiS: '#3a4c88', hemiG: '#1c1428', hemiI: 0.55, fog: '#161c38', night: 1 },
+  { h: 24, top: '#060a1c', hor: '#1b2346', sun: '#8aa0ff', sunI: 0.2, hemiS: '#34467e', hemiG: '#161226', hemiI: 0.5, fog: '#131a33', night: 1 },
 ];
 
 const tmpA = new THREE.Color(); const tmpB = new THREE.Color();
@@ -91,7 +91,7 @@ export class DayNightCycle {
     s.shallowColor.value.set('#29c3c9').multiplyScalar(1 - this.nightAmount * 0.8);
 
     const n = this.nightAmount;
-    this.lamps.poolMat.opacity = n * 0.55;
+    this.lamps.poolMat.opacity = n * 0.8;
     this.lamps.glowMat.opacity = n * 0.9;
     this.buildingMaterial.emissiveIntensity = n * 1.1;
   }

@@ -147,11 +147,11 @@ export function planCity(seed = 11) {
   // street lamps along every road, palms along Coral Parade and the beach
   for (let i = 0; i <= CITY_COLS; i += 1) {
     for (let j = 0; j < CITY_ROWS; j += 1) {
-      lamps.push({ x: i * B + HALF_ROAD + 0.6, z: j * B + B / 2, rotY: Math.PI });
+      for (const f of [0.3, 0.7]) lamps.push({ x: i * B + HALF_ROAD + 0.6, z: j * B + B * f, rotY: Math.PI });
     }
   }
   for (let j = 0; j <= CITY_ROWS; j += 1) {
-    for (let i = 0; i < CITY_COLS; i += 1) lamps.push({ x: i * B + B / 2, z: j * B + HALF_ROAD + 0.6, rotY: -Math.PI / 2 });
+    for (let i = 0; i < CITY_COLS; i += 1) for (const f of [0.3, 0.7]) lamps.push({ x: i * B + B * f, z: j * B + HALF_ROAD + 0.6, rotY: -Math.PI / 2 });
   }
   for (let z = 6; z < HARBOR_Z; z += 14) {
     trees.push({ x: BEACH_X + 3, z, kind: 'palm' });

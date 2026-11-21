@@ -84,24 +84,26 @@ const SCENES = {
     game.hud.toast('Wanted: ~Car alarm tripped~', 'bad');
   },
 
-  /** A night delivery run through the downtown towers, neon and lit windows. */
+  /** An afternoon delivery run toward the beach hotels and the open sea. */
   drive(game) {
-    const laneZ = 3 * 64 + 3.5;
-    startPlay(game, 90, laneZ, Math.PI / 2, 19.35);
+    const laneZ = 2 * 64 + 3.5;
+    startPlay(game, 400, laneZ, Math.PI / 2, 15.8);
     game.progress.missionIndex = 3; game.progress.completed = ['homecoming', 'borrowedShine', 'paperTrail'];
     game.player.money = 11950;
-    const car = game.fleet.spawn('coupe', '#ff70a6', 90, laneZ, Math.PI / 2);
+    clearTrafficNear(game, 430, laneZ, 25);
+    game.traffic.spawnCar(470, laneZ, 10, 60);
+    const car = game.fleet.spawn('coupe', '#ff70a6', 400, laneZ, Math.PI / 2);
     car.velocity.set(20, 0); car.owned = true;
     game.player.enterVehicle(car);
     jumpToMissionStep(game, 'nightShift', 2);
     game.missions.timer = 112; game.missions.cpIndex = 1;
     game.markers.remove(game.missions.stepMarker);
     game.missions.stepMarker = game.markers.add('dropoff', 7 * 64 + 32, 7 * 64 + 4, { radius: 3.5 });
-    game.radio.tune(1);
+    game.radio.tune(2);
     game.autopilot = laneAutopilot('z', laneZ, 1, 24);
     simulate(game, 1.4);
-    game.camera.yaw = car.heading - 0.3;
-    game.camera.pitch = 0.27;
+    game.camera.yaw = car.heading - 0.22;
+    game.camera.pitch = 0.24;
     game.camera.freeLookTimer = 100;
     game.camera.snap();
     game.hud.showRadio(game.radio.stationName);
@@ -110,32 +112,34 @@ const SCENES = {
   /** On foot at Pelican Marina, pistol drawn, Brandt's crew firing back. */
   mission(game) {
     const m = PLACES.marina;
-    const px = m.x - 5; const pz = m.z - 6;
-    startPlay(game, px, pz, 0, 17.6);
-    clearTrafficNear(game, px, pz, 45);
-    game.traffic.enabled = false;
+    const px = m.x - 4; const pz = m.z + 9;
+    startPlay(game, px, pz, Math.PI, 17.7);
+    clearTrafficNear(game, px, pz - 10, 40);
     game.progress.missionIndex = 2; game.progress.completed = ['homecoming', 'borrowedShine'];
     game.player.money = 7340; game.player.armour = 60; game.player.health = 78;
     game.player.giveWeapon('pistol', 41);
     jumpToMissionStep(game, 'paperTrail', 3);
     const goons = game.missions.goons;
-    goons[0].position.set(m.x - 1, 0.1, m.z + 9);
-    goons[1].position.set(m.x + 8, 0.1, m.z + 11);
-    goons[2].position.set(m.x - 9, 0.1, m.z + 7);
+    goons[0].position.set(m.x + 1, 0.1, m.z - 6);
+    goons[1].position.set(m.x + 9, 0.1, m.z - 3);
+    goons[2].position.set(m.x - 11, 0.1, m.z - 2);
     goons[2].hit(200, game.player.position);
     for (const gn of goons) gn.hostile = true;
     game.input.aiming = true;
+    game.camera.yaw = Math.PI;
     simulate(game, 0.8);
+    for (const [k, gn] of goons.entries()) if (k < 2) gn.position.set(k ? m.x + 9 : m.x + 1, 0.1, k ? m.z - 3 : m.z - 6);
     const target = goons[0].position;
-    game.camera.yaw = Math.atan2(target.x - game.player.position.x, target.z - game.player.position.z) - 0.12;
-    game.camera.pitch = 0.16;
-    game.camera.snap();
+    game.camera.yaw = Math.atan2(target.x - game.player.position.x, target.z - game.player.position.z) + 0.3;
     game.player.aiming = false; // keep the aiming pose but frame the wider third-person view
-    game.camera.pitch = 0.22;
-    game.player.facing = game.camera.yaw + 0.12;
+    game.camera.pitch = 0.2;
+    game.camera.snap();
+    game.player.facing = game.camera.yaw - 0.3;
     game.player.syncModel();
     for (let k = 0; k < 10; k += 1) game.render(FIXED_STEP);
     game.combat.playerShoot(WEAPONS.pistol);
+    game.player.facing = game.camera.yaw - 0.3;
+    game.player.syncModel();
     game.combat.npcShoot(goons[1].position, game.player.position, 0, 7);
     game.player.weapons.pistol -= 1;
     game.hud.dialogue([['mari', 'Three of Brandt\'s boys guard that ledger. Make it quick.']]);

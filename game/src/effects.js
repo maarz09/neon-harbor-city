@@ -84,17 +84,16 @@ export class EffectsSystem {
     this.lastSkid = new Map();
   }
 
+  /** Bullet tracers are thin glowing beams (stretched boxes), pooled and faded out. */
   buildTracers(scene) {
-    this.tracerPos = new Float32Array(MAX_TRACERS * 2 * 3);
-    this.tracerCol = new Float32Array(MAX_TRACERS * 2 * 3);
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(this.tracerPos, 3));
-    geo.setAttribute('color', new THREE.BufferAttribute(this.tracerCol, 3));
-    this.tracerGeo = geo;
-    this.tracerLife = new Float32Array(MAX_TRACERS);
-    this.tracers = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
-    this.tracers.frustumCulled = false;
-    scene.add(this.tracers);
+    const geo = new THREE.BoxGeometry(0.05, 0.05, 1).translate(0, 0, 0.5);
+    this.tracerPool = [];
+    for (let k = 0; k < MAX_TRACERS; k += 1) {
+      const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: '#ffe08a', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+      m.visible = false; m.life = 0;
+      scene.add(m);
+      this.tracerPool.push(m);
+    }
     this.tracerCursor = 0;
   }
 
@@ -117,12 +116,14 @@ export class EffectsSystem {
   endSkid(key) { this.lastSkid.delete(key); }
 
   tracer(from, to, color = '#ffe08a') {
-    const k = this.tracerCursor; this.tracerCursor = (this.tracerCursor + 1) % MAX_TRACERS;
-    this.tracerPos.set([from.x, from.y, from.z, to.x, to.y, to.z], k * 6);
-    const c = this.tmpColor.set(color);
-    this.tracerCol.set([c.r, c.g, c.b, c.r * 0.3, c.g * 0.3, c.b * 0.3], k * 6);
-    this.tracerLife[k] = 0.09;
-    this.tracerGeo.attributes.position.needsUpdate = true;
+    const m = this.tracerPool[this.tracerCursor];
+    this.tracerCursor = (this.tracerCursor + 1) % MAX_TRACERS;
+    m.position.copy(from);
+    m.lookAt(to);
+    m.scale.set(1, 1, from.distanceTo(to));
+    m.material.color.set(color);
+    m.material.opacity = 1;
+    m.visible = true; m.life = 0.12;
   }
 
   muzzleFlash(pos) {
@@ -183,12 +184,11 @@ export class EffectsSystem {
     this.clock += dt;
     this.glow.update(dt); this.smoke.update(dt); this.big.update(dt);
     if (this.flashTimer > 0) { this.flashTimer -= dt; if (this.flashTimer <= 0) this.flash.intensity = 0; }
-    let changed = false;
-    for (let k = 0; k < MAX_TRACERS; k += 1) {
-      if (this.tracerLife[k] <= 0) continue;
-      this.tracerLife[k] -= dt;
-      if (this.tracerLife[k] <= 0) { this.tracerCol.fill(0, k * 6, k * 6 + 6); changed = true; }
+    for (const m of this.tracerPool) {
+      if (!m.visible) continue;
+      m.life -= dt;
+      m.material.opacity = Math.max(0, m.life / 0.12);
+      if (m.life <= 0) m.visible = false;
     }
-    if (changed) this.tracerGeo.attributes.color.needsUpdate = true;
   }
 }

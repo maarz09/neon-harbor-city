@@ -77,6 +77,9 @@ export class Game {
       if (level > before) { this.hud.toast(`Wanted: ${this.wanted.lastCrime}`, 'bad'); }
       else if (level === 0 && before > 0) { this.hud.toast('You lost the cops.', 'good'); }
     };
+    // one real headlight beam rides on the player's car after dusk
+    this.headlight = new THREE.SpotLight('#fff1cc', 0, 60, 0.5, 0.5, 1.2);
+    this.scene.add(this.headlight, this.headlight.target);
     this.resize();
     window.addEventListener('resize', () => this.resize());
   }
@@ -409,9 +412,21 @@ export class Game {
     this.cameraObj.fov = 55; this.cameraObj.updateProjectionMatrix();
   }
 
+  /** Aim the headlight beam down the road ahead of the player's car at night. */
+  updateHeadlight() {
+    const v = this.player.vehicle;
+    const night = this.dayNight.nightAmount;
+    if (!v || v.destroyed || night < 0.2) { this.headlight.intensity = 0; return; }
+    const f = v.forward;
+    this.headlight.position.set(v.position.x + f.x * 2.2, 0.9, v.position.z + f.z * 2.2);
+    this.headlight.target.position.set(v.position.x + f.x * 20, 0, v.position.z + f.z * 20);
+    this.headlight.intensity = 60 * night;
+  }
+
   /** Camera, HUD, minimap and music: once per rendered frame. */
   render(realDt) {
     const p = this.player;
+    this.updateHeadlight();
     if (this.state === 'play' || this.state === 'defeat' || this.state === 'paused') {
       this.camera.update(Math.min(realDt, 0.05), p.worldPosition, {
         inVehicle: p.inVehicle, heading: p.inVehicle ? p.vehicle.heading : p.facing,
