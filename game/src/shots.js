@@ -81,6 +81,8 @@ const SCENES = {
     game.camera.pitch = 0.3;
     game.camera.freeLookTimer = 100;
     game.camera.snap();
+    game.hud.toasts.innerHTML = '';
+    game.hud.toast('Wanted: ~Car alarm tripped~', 'bad');
   },
 
   /** An afternoon delivery run toward the beach hotels and the open sea. */

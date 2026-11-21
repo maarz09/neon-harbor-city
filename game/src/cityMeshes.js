@@ -134,9 +134,17 @@ export function buildBuildings(scene, plan, collision) {
       continue;
     }
     const tile = tileByStyle[b.style];
-    batch.addTiledBox(b.x, 0.15 + b.h / 2, b.z, b.w, b.h, b.d, color, tile, b.style, facade.styles);
+    if (b.kind === 'tower' && b.h > 55 && !b.crown) {
+      // a stepped tower: a full-footprint base and a slimmer shaft above it
+      const baseH = Math.round(b.h * 0.55 / tile) * tile || tile;
+      batch.addTiledBox(b.x, 0.15 + baseH / 2, b.z, b.w, baseH, b.d, color, tile, b.style, facade.styles);
+      batch.addTiledBox(b.x, 0.15 + baseH + (b.h - baseH) / 2, b.z, b.w * 0.72, b.h - baseH, b.d * 0.72, color.clone().offsetHSL(0, 0.04, 0.04), tile, b.style, facade.styles);
+    } else {
+      batch.addTiledBox(b.x, 0.15 + b.h / 2, b.z, b.w, b.h, b.d, color, tile, b.style, facade.styles);
+    }
     collision.addBox(b.x - b.w / 2, b.x + b.w / 2, b.z - b.d / 2, b.z + b.d / 2, b.h + 0.15, 'building');
     const roofY = 0.15 + b.h;
+    addBuildingDetails(rooftop, b, color, rand);
     // ground-floor shopfront band and awning for apartments and hotels
     if (b.kind === 'apartment' || b.kind === 'hotel' || b.kind === 'venue') {
       rooftop.addBox(b.x, 0.15 + 3.3, b.z, b.w + 0.3, 0.35, b.d + 0.3, new THREE.Color('#ffffff'));
@@ -175,6 +183,53 @@ export function buildBuildings(scene, plan, collision) {
   roofMesh.castShadow = true; roofMesh.receiveShadow = true;
   scene.add(mesh, roofMesh);
   return { material };
+}
+
+const AWNINGS = ['#ff5d73', '#2ec4b6', '#ffb703', '#3a86ff', '#8ac926', '#ff8fab'];
+
+/** Balconies with railings, striped shop awnings and rooftop pools: the small things that make
+ * a box read as a building in a beach town. */
+function addBuildingDetails(batch, b, color, rand) {
+  const white = new THREE.Color('#f7f3ea');
+  if (b.kind === 'apartment' || b.kind === 'hotel') {
+    const floors = Math.floor(b.h / STOREY);
+    const along = b.kind === 'hotel' ? [[-1, 0]] : [[0, 1], [0, -1]];
+    for (const [fx, fz] of along) {
+      for (let f = 1; f < floors; f += 1) {
+        const y = 0.15 + f * STOREY + 0.1;
+        for (const off of b.kind === 'hotel' ? [-9, -3, 3, 9] : [-b.w / 4, b.w / 4]) {
+          if (fx) { // west face (hotels look out over the street toward the city)
+            const x = b.x + fx * (b.w / 2 + 0.6); const z = b.z + off;
+            if (Math.abs(off) > b.d / 2 - 1.5) continue;
+            batch.addBox(x, y, z, 1.2, 0.16, 3.2, white);
+            batch.addBox(x + fx * 0.55, y + 0.5, z, 0.06, 0.9, 3.2, color.clone().offsetHSL(0, 0.15, -0.1));
+          } else {
+            const x = b.x + off; const z = b.z + fz * (b.d / 2 + 0.6);
+            batch.addBox(x, y, z, 3.2, 0.16, 1.2, white);
+            batch.addBox(x, y + 0.5, z + fz * 0.55, 3.2, 0.9, 0.06, color.clone().offsetHSL(0, 0.15, -0.1));
+          }
+        }
+      }
+    }
+  }
+  if (b.kind === 'apartment' || b.kind === 'venue') {
+    // a striped awning on two faces at shop level
+    const awning = new THREE.Color(rand.pick(AWNINGS));
+    for (const fz of [1, -1]) {
+      const z = b.z + fz * (b.d / 2 + 0.75);
+      const n = Math.max(2, Math.floor(b.w / 1.2));
+      for (let k = 0; k < n; k += 1) {
+        const x = b.x - b.w * 0.4 + (k + 0.5) * (b.w * 0.8 / n);
+        batch.addBox(x, 3.05, z, b.w * 0.8 / n, 0.12, 1.5, k % 2 ? white : awning, { rotY: 0 });
+      }
+    }
+  }
+  if (b.kind === 'hotel') {
+    const roofY = 0.15 + b.h;
+    batch.addBox(b.x + 3, roofY + 0.15, b.z, b.w * 0.45, 0.3, b.d * 0.55, new THREE.Color('#9fe7f5'));
+    batch.addBox(b.x + 3, roofY + 0.1, b.z, b.w * 0.5, 0.2, b.d * 0.62, white);
+    batch.addBox(b.x - b.w / 2 + 0.4, roofY + 0.6, b.z, 0.3, 1.2, b.d, white);
+  }
 }
 
 /** Neon shop signs and rooftop billboards, each a small textured plane. */
